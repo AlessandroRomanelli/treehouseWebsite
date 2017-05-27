@@ -28,13 +28,15 @@ gulp.task('concatScripts', () => {
 
 gulp.task('minifyScripts', ['concatScripts'], () => {
   return gulp.src(options.build+'/js/all.js')
+    .pipe(maps.init({loadMaps: true}))
     .pipe(uglify())
     .pipe(rename('all.min.js'))
+    .pipe(maps.write('./'))
     .pipe(gulp.dest(options.build+'/js'))
 })
 
 gulp.task('scripts', ['minifyScripts'], () => {
-  return gulp.src(options.build+'/js/all.min.js')
+  return gulp.src([options.build+'/js/all.min.js', options.build+'/js/all.min.js.map'])
     .pipe(gulp.dest(options.dest+'/scripts'));
 });
 
@@ -49,13 +51,15 @@ gulp.task('compileStyles', () => {
 
 gulp.task('minifyStyles', ['compileStyles'], () => {
   return gulp.src(options.build+'/css/all.css')
-    .pipe(csso({sourceMap: true}))
+    .pipe(maps.init({loadMaps: true}))
+    .pipe(csso())
     .pipe(rename('all.min.css'))
+    .pipe(maps.write('./'))
     .pipe(gulp.dest(options.build+'/css'))
 });
 
 gulp.task('styles', ['minifyStyles'], () => {
-  return gulp.src(options.build+'/css/all.min.css')
+  return gulp.src([options.build+'/css/all.min.css', options.build+'/css/all.min.css.map'])
     .pipe(gulp.dest(options.dest+'/styles'))
     .pipe(connect.reload());
 });
